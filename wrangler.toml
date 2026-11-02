@@ -1,4 +1,4 @@
-name = "vito-gaming-vpn"
+name = "vito-gaming-vpn-v2"
 main = "worker.js"
 compatibility_date = "2026-11-02"
 
