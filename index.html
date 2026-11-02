@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VITO VPN PANEL</title>
+    <style>
+        body {
+            background-color: #0b0c10;
+            color: #c5c6c7;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            padding: 50px 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 450px;
+            margin: auto;
+            background: #1f2833;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 24px rgba(255, 69, 0, 0.3);
+            border: 2px solid #ff4500;
+        }
+        h1 {
+            color: #ff4500;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .status {
+            font-size: 14px;
+            color: #ff8c00;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+        .btn {
+            background: linear-gradient(135deg, #ff4500 0%, #ff8c00 100%);
+            border: none;
+            color: white;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 69, 0, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 80%;
+        }
+        .btn:active {
+            transform: scale(0.98);
+        }
+        .metrics {
+            margin-top: 30px;
+            font-size: 13px;
+            color: #86c232;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>VITO VPN</h1>
+    <div class="status">⚡ TRIPLE TUNNEL MODE (MTU 1280) ⚡</div>
+    
+    <button class="btn" id="connectBtn" onclick="toggleConnection()">CONNECT</button>
+    
+    <div class="metrics" id="pingMetric">Status: Disconnected</div>
+</div>
+
+<script>
+    let isConnected = false;
+
+    function toggleConnection() {
+        const btn = document.getElementById('connectBtn');
+        const metric = document.getElementById('pingMetric');
+        
+        if (!isConnected) {
+            btn.innerText = "CONNECTING...";
+            btn.style.background = "#555";
+            
+            // Put your custom Cloudflare Worker deployment endpoint URL below
+            fetch('https://workers.dev')
+                .then(res => {
+                    if(!res.ok) throw new Error("Backend connection failed");
+                    return res.text();
+                })
+                .then(data => {
+                    const rawBlocks = data.split('[Interface]');
+                    if (rawBlocks.length >= 4) {
+                        const config0 = '[Interface]' + rawBlocks[1];
+                        const config1 = '[Interface]' + rawBlocks[2];
+                        const config2 = '[Interface]' + rawBlocks[3];
+                        
+                        if (typeof Android !== 'undefined' && Android.startTunnel) {
+                            Android.startTunnel(config0);
+                            setTimeout(() => { Android.startTunnel(config1); }, 60);
+                            setTimeout(() => { Android.startTunnel(config2); }, 120);
+                        }
+                    }
+                    
+                    isConnected = true;
+                    btn.innerText = "DISCONNECT";
+                    btn.style.background = "linear-gradient(135deg, #d9534f 0%, #c9302c 100%)";
+                    metric.innerText = "Status: Connected | Multi-Path 3-Tunnel Active";
+                })
+                .catch(err => {
+                    btn.innerText = "CONNECT";
+                    btn.style.background = "linear-gradient(135deg, #ff4500 0%, #ff8c00 100%)";
+                    metric.innerText = "Error: Failed to fetch configuration.";
+                });
+        } else {
+            if (typeof Android !== 'undefined' && Android.stopAllTunnels) {
+                Android.stopAllTunnels();
+            }
+            isConnected = false;
+            btn.innerText = "CONNECT";
+            btn.style.background = "linear-gradient(135deg, #ff4500 0%, #ff8c00 100%)";
+            metric.innerText = "Status: Disconnected";
+        }
+    }
+</script>
+
+</body>
+</html>
