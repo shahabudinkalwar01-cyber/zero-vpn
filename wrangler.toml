@@ -1,0 +1,8 @@
+name = "vito-gaming-vpn"
+main = "worker.js"
+compatibility_date = "2026-11-02"
+
+[vars]
+WG0_PRIVATE_KEY = "PLACEHOLDER_KEY_1"
+WG1_PRIVATE_KEY = "PLACEHOLDER_KEY_2"
+WG2_PRIVATE_KEY = "PLACEHOLDER_KEY_3"
