@@ -1,0 +1,22 @@
+name: Deploy Worker
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          vars: |
+            WG0_PRIVATE_KEY: ${{ secrets.WG0_PRIVATE_KEY }}
+            WG1_PRIVATE_KEY: ${{ secrets.WG1_PRIVATE_KEY }}
+            WG2_PRIVATE_KEY: ${{ secrets.WG2_PRIVATE_KEY }}
