@@ -16,6 +16,7 @@ jobs:
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           vars: |
             WG0_PRIVATE_KEY: ${{ secrets.WG0_PRIVATE_KEY }}
             WG1_PRIVATE_KEY: ${{ secrets.WG1_PRIVATE_KEY }}
